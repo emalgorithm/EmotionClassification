@@ -8,6 +8,12 @@ from sklearn.model_selection import train_test_split
 
 from tree import Tree
 
+def binarize_dataset(dataset, emotion_number):
+	binary_dataset = dataset.copy()
+	binary_dataset['emotion'] = binary_dataset['emotion'].apply(lambda emotion: 1 if emotion == emotion_number else 0)
+
+	return binary_dataset
+
 clean_data = scipy.io.loadmat('data/cleandata_students.mat')
 noisy_data = scipy.io.loadmat('data/noisydata_students.mat')
 
@@ -40,7 +46,7 @@ X_train, X_test, y_train, y_test = train_test_split(clean_dataset[predictors], c
 
 emotion = 6
 tree = Tree(target)
-tree.fit(predictors, emotion, clean_dataset[:10])#X_train[:10], y_train[:10])
+tree.fit(predictors, emotion, binarize_dataset(clean_dataset[:10], emotion))#X_train[:10], y_train[:10])
 # Training Data Accuracy
 
 correct = 0
@@ -53,6 +59,7 @@ for i in range(noisy_dataset.shape[0]):
     total += 1
         
 print("Accuracy is " + str(correct * 100 / total) + "%")
+
 
 
 # def cross_validation(k, emotion, dataset):

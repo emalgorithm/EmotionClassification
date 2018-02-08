@@ -8,9 +8,9 @@ class Tree(object):
 
 	def fit(self, predictors, emotion_number, training_data):
 	    # Create dataframe which has only 0/1 in target column indicating if training sample belongs to given emotion or not
-	    binary_training_data = training_data.copy()
-	    binary_training_data['emotion'] = binary_training_data['emotion'].apply(lambda emotion: 1 if emotion == emotion_number else 0)
-	    root = self.helper(predictors, binary_training_data)
+	    # binary_training_data = training_data.copy()
+	    # binary_training_data['emotion'] = binary_training_data['emotion'].apply(lambda emotion: 1 if emotion == emotion_number else 0)
+	    root = self.helper(predictors, training_data)
 	    self.root = root
 
 	def predict(self, data_point):
