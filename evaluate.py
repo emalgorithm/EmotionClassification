@@ -14,6 +14,26 @@ def binarize_dataset(dataset, emotion_number):
 
 	return binary_dataset
 
+def cross_validation(k, emotion_number, dataset):
+	for i in range(k):
+		bin_dataset = binarize_dataset(dataset, emotion_number)
+		
+		#TODO: Maybe generate our own splits to control that they are different (even if these should be as well)
+		X_train, X_test, y_train, y_test = train_test_split(bin_dataset[predictors], bin_dataset[target], test_size=0.2)
+		
+		tree = Tree(target)
+		tree.fit(predictors, emotion_number, X_train, y_train)
+
+		correct = 0
+		total = 0
+
+		for index, row in X_test.iterrows():
+		    if tree.predict(row) == y_test.loc[index]:
+		        correct += 1
+		    total += 1
+		        
+		print("Accuracy for round " + str(i) + " is " + str(correct * 100 / total) + "%")
+
 clean_data = scipy.io.loadmat('data/cleandata_students.mat')
 noisy_data = scipy.io.loadmat('data/noisydata_students.mat')
 
@@ -43,46 +63,31 @@ classes = list(set(clean_y))
 predictors = list(clean_dataset.columns)
 predictors.remove(target)
 
-emotion = 6
+emotion_number = 6
 
-bin_dataset = binarize_dataset(clean_dataset[:10], emotion)
-X_train, X_test, y_train, y_test = train_test_split(bin_dataset[predictors], bin_dataset[target], test_size=0.2)
+cross_validation(10, emotion_number, clean_dataset)
 
-tree = Tree(target)
-tree.fit(predictors, emotion, X_train[:10], y_train[:10])
-# Training Data Accuracy
+# bin_dataset = binarize_dataset(clean_dataset[:10], emotion)
+# X_train, X_test, y_train, y_test = train_test_split(bin_dataset[predictors], bin_dataset[target], test_size=0.2)
 
-correct = 0
-total = 0
+# tree = Tree(target)
+# tree.fit(predictors, emotion, X_train[:10], y_train[:10])
+# # Training Data Accuracy
 
-for i in range(noisy_dataset.shape[0]):
-    positive = noisy_dataset.iloc[i]['emotion'] == emotion
-    if tree.predict(noisy_dataset.iloc[i]) == positive:
-        correct += 1
-    total += 1
+# correct = 0
+# total = 0
+
+# for i in range(noisy_dataset.shape[0]):
+#     positive = noisy_dataset.iloc[i]['emotion'] == emotion
+#     if tree.predict(noisy_dataset.iloc[i]) == positive:
+#         correct += 1
+#     total += 1
         
-print("Accuracy is " + str(correct * 100 / total) + "%")
+# print("Accuracy is " + str(correct * 100 / total) + "%")
 
 
 
-# def cross_validation(k, emotion, dataset):
-# 	for i in range(k):
-# 		#TODO: Maybe generate our own splits to control that they are different (even if these should be as well)
-# 		X_train, X_test, y_train, y_test = train_test_split(dataset[predictors], dataset[target], test_size=0.2)
-# 		tree = Tree(target)
-# 		tree.fit(predictors, emotion, dataset)
-# 		# Training Data Accuracy
 
-# 		correct = 0
-# 		total = 0
-
-# 		for i in range(noisy_dataset.shape[0]):
-# 		    positive = noisy_dataset.iloc[i]['emotion'] == emotion
-# 		    if tree.predict(noisy_dataset.iloc[i]) == positive:
-# 		        correct += 1
-# 		    total += 1
-		        
-# 		print("Accuracy is " + str(correct * 100 / total) + "%")
 
 
 
