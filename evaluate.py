@@ -42,11 +42,14 @@ classes = list(set(clean_y))
 # Store list of all predictors
 predictors = list(clean_dataset.columns)
 predictors.remove(target)
-X_train, X_test, y_train, y_test = train_test_split(clean_dataset[predictors], clean_dataset[target], test_size=0.2)
 
 emotion = 6
+
+bin_dataset = binarize_dataset(clean_dataset[:10], emotion)
+X_train, X_test, y_train, y_test = train_test_split(bin_dataset[predictors], bin_dataset[target], test_size=0.2)
+
 tree = Tree(target)
-tree.fit(predictors, emotion, binarize_dataset(clean_dataset[:10], emotion))#X_train[:10], y_train[:10])
+tree.fit(predictors, emotion, X_train[:10], y_train[:10])
 # Training Data Accuracy
 
 correct = 0
