@@ -59,6 +59,26 @@ def get_predictors():
 
 	return predictors
 
+def get_precision(y_true, y_predicted, emotion_number):
+	predicted_positive = sum([1 for prediction in y_predicted if prediction == emotion_number])
+	true_positive = sum([1 for i, prediction in enumerate(y_predicted) if prediction == emotion_number and y_true[i] == emotion_number])
+
+	return float(true_positive) / float(predicted_positive)
+
+def get_recall(y_true, y_predicted, emotion_number):
+	positive = sum([1 for elem in y_true if elem == emotion_number])
+	true_positive = sum([1 for i, prediction in enumerate(y_predicted) if prediction == emotion_number and y_true[i] == emotion_number])
+
+	return float(true_positive) / float(positive)
+
+def get_f1_score(y_true, y_predicted, emotion_number):
+	precision = get_precision(y_true, y_predicted, emotion_number)
+	recall = get_recall(y_true, y_predicted, emotion_number)
+
+	return 2 * (precision * recall) / (precision + recall)
+
+
+
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
