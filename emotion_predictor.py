@@ -23,3 +23,4 @@ class EmotionPredictor(object):
         for i, tree in enumerate(self.trees):
             if tree.predict(data_point):
                 return i + 1
+        return 1
