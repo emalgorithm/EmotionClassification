@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 
 from emotion_predictor import EmotionPredictor
 from tree import Tree
-from util import get_clean_dataframe, get_target, get_predictors, get_emotion_values, plot_confusion_matrix
+from util import get_clean_dataframe, get_noisy_dataframe, get_target, get_predictors, get_emotion_values, plot_confusion_matrix, get_precision, get_recall, get_f1_score
+from draw_tree import visualise
 
 def cross_validation(k, dataset):
     accuracies = []
@@ -43,20 +44,26 @@ def cross_validation(k, dataset):
         accuracies.append(accuracy)
         print("Accuracy for round " + str(i) + " is " + str(accuracy) + "%")
     
+    print("Result for cross validation: Accuracy has a mean of {} and a std of {}".format(np.mean(accuracies), np.std(accuracies)))
+
+    for emotion_number in emotion_values:
+        print("Precision for emotion {} is {}".format(emotion_number, get_precision(y_true, y_pred, emotion_number)))
+        print("Recall for emotion {} is {}".format(emotion_number, get_recall(y_true, y_pred, emotion_number)))
+        print("f1 score for emotion {} is {}".format(emotion_number, get_f1_score(y_true, y_pred, emotion_number)))
+    
     plt.figure()
     cfm = confusion_matrix(y_true, y_pred) / k
     plot_confusion_matrix(cfm, classes=["1", "2", "3", "4", "5", "6"])
     plt.show()
 
-    print("Result for cross validation: Accuracy has a mean of {} and a std of {}".format(np.mean(accuracies), np.std(accuracies)))
 
 
 
 
 
-cross_validation(5, get_clean_dataframe())
+# cross_validation(5, get_noisy_dataframe())
 
-# dataset = get_clean_dataframe()[:10]
+# dataset = get_clean_dataframe()[:50]
 # target = get_target()
 # predictors = get_predictors()
 # emotion_values = get_emotion_values()
@@ -65,6 +72,8 @@ cross_validation(5, get_clean_dataframe())
 
 # emotion_predictor = EmotionPredictor(target, predictors)
 # emotion_predictor.fit(emotion_values, X_train, y_train)
+# visualise(emotion_predictor.trees[0])
+
 
 
 
