@@ -9,13 +9,8 @@ from emotion_predictor import EmotionPredictor
 from tree import Tree
 from util import get_clean_dataframe, get_target, get_predictors, get_emotion_values
 
-def binarize_dataset(dataset, emotion_number):
-    binary_dataset = dataset.copy()
-    binary_dataset['emotion'] = binary_dataset['emotion'].apply(lambda emotion: 1 if emotion == emotion_number else 0)
-
-    return binary_dataset
-
 def cross_validation(k, dataset):
+    accuracies = []
     for i in range(k):
         target = get_target()
         predictors = get_predictors()
@@ -35,40 +30,14 @@ def cross_validation(k, dataset):
                 correct += 1
             total += 1
                 
-        print("Accuracy for round " + str(i) + " is " + str(correct * 100 / total) + "%")
+        accuracy = float(correct * 100) / float(total)
+        accuracies.append(accuracy)
+        print("Accuracy for round " + str(i) + " is " + str(accuracy) + "%")
 
-# target = get_target()
-# predictors = get_predictors()
-
-# clean_dataset = get_clean_dataframe()
-# X_train, X_test, y_train, y_test = train_test_split(clean_dataset[predictors], clean_dataset[target], test_size=0.2)
-
-# emotion_predictor = EmotionPredictor(target, predictors)
-# emotion_predictor.fit(emotion_values, X_train, y_train)
-
-cross_validation(10, get_clean_dataframe()[:30])
+    print("Result for cross validation: Accuracy has a mean of {} and a std of {}".format(np.mean(accuracies), np.std(accuracies)))
 
 
-# cross_validation(10, emotion_number, clean_dataset)
-
-# bin_dataset = binarize_dataset(clean_dataset[:10], emotion)
-# X_train, X_test, y_train, y_test = train_test_split(bin_dataset[predictors], bin_dataset[target], test_size=0.2)
-
-# tree = Tree(target)
-# tree.fit(predictors, emotion, X_train[:10], y_train[:10])
-# # Training Data Accuracy
-
-# correct = 0
-# total = 0
-
-# for i in range(noisy_dataset.shape[0]):
-#     positive = noisy_dataset.iloc[i]['emotion'] == emotion
-#     if tree.predict(noisy_dataset.iloc[i]) == positive:
-#         correct += 1
-#     total += 1
-        
-# print("Accuracy is " + str(correct * 100 / total) + "%")
-
+cross_validation(10, get_clean_dataframe()[:200])
 
 
 
