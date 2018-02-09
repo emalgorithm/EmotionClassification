@@ -1,16 +1,20 @@
-import scipy.io
 import numpy as np
 import math
 import pandas as pd
 from pandas import Series
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
 
 from emotion_predictor import EmotionPredictor
 from tree import Tree
-from util import get_clean_dataframe, get_target, get_predictors, get_emotion_values
+from util import get_clean_dataframe, get_target, get_predictors, get_emotion_values, plot_confusion_matrix
 
 def cross_validation(k, dataset):
     accuracies = []
+    y_pred = []
+    y_true = []
+    
     for i in range(k):
         target = get_target()
         predictors = get_predictors()
@@ -25,19 +29,42 @@ def cross_validation(k, dataset):
         correct = 0
         total = 0
 
+        predictions = []
+
         for index, row in X_test.iterrows():
-            if emotion_predictor.predict(row) == y_test.loc[index]:
+            prediction = emotion_predictor.predict(row)
+            if prediction == y_test.loc[index]:
                 correct += 1
+            y_pred.append(prediction)
+            y_true.append(y_test.loc[index])
             total += 1
                 
         accuracy = float(correct * 100) / float(total)
         accuracies.append(accuracy)
         print("Accuracy for round " + str(i) + " is " + str(accuracy) + "%")
+    
+    plt.figure()
+    cfm = confusion_matrix(y_true, y_pred) / k
+    plot_confusion_matrix(cfm, classes=["1", "2", "3", "4", "5", "6"])
+    plt.show()
 
     print("Result for cross validation: Accuracy has a mean of {} and a std of {}".format(np.mean(accuracies), np.std(accuracies)))
 
 
-cross_validation(10, get_clean_dataframe()[:200])
+
+
+
+cross_validation(5, get_clean_dataframe())
+
+# dataset = get_clean_dataframe()[:10]
+# target = get_target()
+# predictors = get_predictors()
+# emotion_values = get_emotion_values()
+
+# X_train, X_test, y_train, y_test = train_test_split(dataset[predictors], dataset[target], test_size=0.0)
+
+# emotion_predictor = EmotionPredictor(target, predictors)
+# emotion_predictor.fit(emotion_values, X_train, y_train)
 
 
 
