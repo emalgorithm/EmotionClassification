@@ -11,6 +11,10 @@ def majority_value(binary_targets):
     if no_ones > no_zeroes:
         return 1, no_ones / len(binary_targets)
     # ? no_ones == no_zeroes
+    #this is where we make the forest
+    #if no_ones == no_zeroes:
+    #    print("muye")
+        #return -1, -1 # indication that we should make 2 trees
     return 0, no_zeroes / len(binary_targets)
 
 def entropy(p, n):
@@ -76,6 +80,11 @@ def decision_tree_learning(examples, attributes, binary_targets):
         classification, confidence = majority_value(binary_targets)
         return Node(None, [], classification, confidence)
     else:
+        classification, confidence = majority_value(binary_targets)
+        # if 95% of the values agree - pruning
+        if confidence >= 0.90:
+            return Node(None, [], classification, confidence)
+
         best_attribute = choose_best_decision_attribute(examples, attributes, binary_targets)
         # a new decision tree with root as best_attribute
         root = Node(best_attribute, [], None)
@@ -85,12 +94,11 @@ def decision_tree_learning(examples, attributes, binary_targets):
             examples_i, binary_targets_i = split_data(examples, best_attribute, binary_targets, i)
 
             if examples_i.size == 0:
-                classification, confidence = majority_value(binary_targets)
                 root.kids[i] = Node(None, [], classification, confidence)
             else:
                 index = np.argwhere(attributes == best_attribute)
                 attributes = np.delete(attributes, index)
-                root.kids[i] = decision_tree_learning(examples_i, attributes, binary_targets_i)            
+                root.kids[i] = decision_tree_learning(examples_i, attributes, binary_targets_i)
     return root
 
 def predict_helper(tree, data_point):

@@ -26,14 +26,14 @@ def main():
     accuracy = []
 
     for fold in range(folds):
-        train_x, test_x, train_y, test_y = train_test_split(clean_data_x, clean_data_y, test_size=0.2)
-        # low = int(fold * (num_data / folds))
-        # high = int(low + (num_data / folds))
-        # print("FOR THIS RUN {} {}".format(low, high))
-        # train_x = np.concatenate((clean_data_x[:low], clean_data_x[high:]), axis = 0)
-        # train_y = np.concatenate((clean_data_y[:low], clean_data_y[high:]), axis = 0)
-        # test_x = clean_data_x[low:high]
-        # test_y = clean_data_y[low:high]
+        #train_x, test_x, train_y, test_y = train_test_split(clean_data_x, clean_data_y, test_size=0.2)
+        low = int(fold * (num_data / folds))
+        high = int(low + (num_data / folds))
+        print("FOR THIS RUN {} {}".format(low, high))
+        train_x = np.concatenate((clean_data_x[:low], clean_data_x[high:]), axis = 0)
+        train_y = np.concatenate((clean_data_y[:low], clean_data_y[high:]), axis = 0)
+        test_x = clean_data_x[low:high]
+        test_y = clean_data_y[low:high]
         accuracy.append(emotion_predictor.train_and_test_trees(train_x, train_y, test_x, test_y))
         print("Accuracy for this round " + str(accuracy[-1]) + "%")
 
