@@ -20,7 +20,16 @@ class EmotionPredictor(object):
 
     # Predict emotion for a given data_point
     def predict(self, data_point):
+        predicted_emotion = 1
+        max_confidence = 0
+
         for i, tree in enumerate(self.trees):
-            if tree.predict(data_point):
-                return i + 1
-        return 1
+            emotion, confidence = tree.predict(data_point)
+            if emotion == 0:
+                confidence = 1 - confidence
+
+            if confidence >= max_confidence:
+                predicted_emotion = i + 1
+                max_confidence = confidence
+        
+        return predicted_emotion

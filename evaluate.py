@@ -61,7 +61,7 @@ def cross_validation(k, dataset):
 
 
 
-# cross_validation(5, get_noisy_dataframe())
+cross_validation(5, get_clean_dataframe())
 
 # dataset = get_clean_dataframe()[:50]
 # target = get_target()
