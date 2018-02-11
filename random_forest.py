@@ -16,25 +16,11 @@ class RandomForest(object):
             self.trees.append(tree)
 
     def predict(self, data_point):
-        results = [tree.predict(data_point) for tree in self.trees]
+        confidence = sum([tree.predict(data_point)[1] for tree in self.trees]) / len(self.trees)
 
-        positive_confidence = 0.0
+        emotion = 1 if confidence >= 0.5 else 0
 
-        for prediction, confidence in results:
-
-            if prediction == 0:
-                confidence = 1 - confidence
-
-            positive_confidence += confidence
-
-        positive_confidence = positive_confidence / len(results)
-
-        if positive_confidence >= 0.5:
-            return 1, positive_confidence
-
-        else:
-            return 0, 1 - positive_confidence
-
+        return emotion, confidence
 
 
     def get_new_sample(self, X, y):

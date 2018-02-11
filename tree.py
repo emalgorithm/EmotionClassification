@@ -45,7 +45,7 @@ class Tree(object):
 
     def get_leaf(self, y):
         counts = np.bincount(y)
-        confidence = np.max(counts) / len(y)
+        confidence = sum(y) / len(y)
         return Node(c = np.argmax(counts), confidence = confidence)
         
     """ 
