@@ -25,18 +25,14 @@ class Tree(object):
     def fit_helper(self, remaining_predictors, remaining_X, remaining_y):  
         # If the remaining_training_data all belong to same class, then stop
         if not remaining_predictors or self.all_equal(remaining_y):
-            counts = np.bincount(remaining_y)
-            confidence = np.max(counts) / len(remaining_y)
-            return Node(c = np.argmax(counts), confidence = confidence)
+            return self.get_leaf(remaining_y)
             
         # Out of all predictors remaining_X_j and values s, we need to find j and s such that entropy is minimized
         # In this case, since the predictors are binary, we don't need to find s since we only have one choice of branching
         j, new_remaining_predictors = self.get_best_predictor(remaining_predictors, remaining_X, remaining_y)
         
         if j == -1:
-            counts = np.bincount(remaining_y)
-            confidence = np.max(counts) / len(remaining_y)
-            return Node(c = np.argmax(counts), confidence = confidence)
+            return self.get_leaf(remaining_y)
         
         # Now all training examples with remaining_X_j = 0 will belong to the left subtree, and remaining_X_j = 1 to the right subtree
         left_X, right_X, left_y, right_y = self.split_data_based_on_predictor(remaining_X, remaining_y, j)
@@ -46,6 +42,11 @@ class Tree(object):
         
         current_node = Node(kids=[left_node, right_node], op=j)
         return current_node
+
+    def get_leaf(self, y):
+        counts = np.bincount(y)
+        confidence = np.max(counts) / len(y)
+        return Node(c = np.argmax(counts), confidence = confidence)
         
     """ 
     Return the predictor among predictors which maximizes the information gain (minimizes the entropy) for data X and y
