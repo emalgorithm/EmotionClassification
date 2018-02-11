@@ -26,16 +26,18 @@ class Tree(object):
     def fit_helper(self, remaining_predictors, remaining_X, remaining_y):  
         # If the remaining_training_data all belong to same class, then stop
         if not remaining_predictors or self.all_equal(remaining_y):
-            confidence = remaining_y.value_counts().max() / len(remaining_y)
-            return Node(c = remaining_y.value_counts().idxmax(), confidence = confidence)
+            counts = np.bincount(remaining_y)
+            confidence = np.argmax(counts) / len(remaining_y)
+            return Node(c = np.max(counts), confidence = confidence)
             
         # Out of all predictors remaining_X_j and values s, we need to find j and s such that entropy is minimized
         # In this case, since the predictors are binary, we don't need to find s since we only have one choice of branching
         j, new_remaining_predictors = self.get_best_predictor(remaining_predictors, remaining_X, remaining_y)
         
         if j == -1:
-            confidence = remaining_y.value_counts().max() / len(remaining_y)
-            return Node(c = remaining_y.value_counts().idxmax(), confidence = confidence)
+            counts = np.bincount(remaining_y)
+            confidence = np.argmax(counts) / len(remaining_y)
+            return Node(c = np.max(counts), confidence = confidence)
         
         # Now all training examples with remaining_X_j = 0 will belong to the left subtree, and remaining_X_j = 1 to the right subtree
         left_X, right_X, left_y, right_y = self.split_data_based_on_predictor(remaining_X, remaining_y, j)
@@ -58,7 +60,7 @@ class Tree(object):
             # Split data based on predictor
             left_X, right_X, left_y, right_y = self.split_data_based_on_predictor(X, y, predictor)
             
-            if left_X.empty or right_X.empty:
+            if len(left_X) == 0 or len(right_X) == 0:
                 remaining_predictors.remove(predictor)
                 continue
             
@@ -85,7 +87,7 @@ class Tree(object):
             
     def get_list_cross_entropy(self, ys):
         # An empty list has 0 entropy
-        if ys.empty:
+        if len(ys) == 0:
             return 0
         
         proportion_of_ones = float(sum(ys)) / len(ys)
@@ -100,13 +102,17 @@ class Tree(object):
 
 
     def split_data_based_on_predictor(self, X, y, j):
-        left_X = X[X[j] == 0]
-        right_X = X[X[j] == 1]
+        left_filter = (X[:, j] == 0)
+        right_filter = np.logical_not(left_filter)
+
+        left_X = X[left_filter, :]
+        right_X = X[right_filter, :]
         
-        left_y = y[X[j] == 0]
-        right_y = y[X[j] == 1]
+        left_y = y[left_filter]
+        right_y = y[right_filter]
 
         return left_X, right_X, left_y, right_y
 
-    def all_equal(self, series):
-        return len(set(series)) == len(series)
+    # Returns True if all elements in y are 0 or if all elements are 1
+    def all_equal(self, y):
+        return sum(y) == 0 or sum(y) == len(y)

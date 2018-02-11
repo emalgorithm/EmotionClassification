@@ -7,9 +7,7 @@ import matplotlib.pyplot as plt
 import itertools
 
 def binarize_y(y, emotion_number):
-	binary_y = y.apply(lambda emotion: 1 if emotion == emotion_number else 0)
-
-	return binary_y
+	return np.array([1 if elem == emotion_number else 0 for elem in y])
 
 def get_clean_dataframe():
 	clean_data = scipy.io.loadmat('data/cleandata_students.mat')
@@ -26,6 +24,25 @@ def get_clean_dataframe():
 	clean_dataset[get_target()] = Series(clean_y, index=clean_dataset.index)
 
 	return clean_dataset
+
+def get_clean_data():
+	return get_data('data/cleandata_students.mat')
+
+def get_noisy_data():
+	return get_data('data/noisydata_students.mat')
+
+def get_data(path):
+	data = scipy.io.loadmat(path)
+
+	# clean_X and noisy_X are numpy matrixes with dimensions (# of training examples, number of features) containing training data
+	X = data['x']
+
+	# clean_Y and noisy_Y are numpy matrixes with dimensions (# of training examples, 1) 
+	# clean_Y[k][0] contains the target emotion for training example k
+	y = np.array([array[0] for array in data['y']])
+
+	return X, y
+
 
 def get_noisy_dataframe():
 	noisy_data = scipy.io.loadmat('data/noisydata_students.mat')

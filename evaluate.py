@@ -5,24 +5,27 @@ from pandas import Series
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
+from sklearn.model_selection import cross_val_score
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 from emotion_predictor import EmotionPredictor
 from tree import Tree
 from util import get_clean_dataframe, get_noisy_dataframe, get_target, get_predictors, get_emotion_values, plot_confusion_matrix, get_precision, get_recall, get_f1_score
+from util import get_clean_data, get_noisy_data
 from draw_tree import visualise
 
-def cross_validation(k, dataset):
+def cross_validation(k, X, y):
     accuracies = []
     y_pred = []
     y_true = []
-    
-    for i in range(k):
-        target = get_target()
-        predictors = get_predictors()
-        emotion_values = get_emotion_values()
+    target = get_target()
+    predictors = get_predictors()
+    emotion_values = get_emotion_values()
 
+    for i in range(k):
         #TODO: Maybe generate our own splits to control that they are different (even if these should be as well)
-        X_train, X_test, y_train, y_test = train_test_split(dataset[predictors], dataset[target], test_size=0.2)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
         emotion_predictor = EmotionPredictor(target, predictors)
         emotion_predictor.fit(emotion_values, X_train, y_train)
@@ -32,36 +35,44 @@ def cross_validation(k, dataset):
 
         predictions = []
 
-        for index, row in X_test.iterrows():
+        for index, row in enumerate(X_test):
             prediction = emotion_predictor.predict(row)
-            if prediction == y_test.loc[index]:
+            if prediction == y_test[index]:
                 correct += 1
             y_pred.append(prediction)
-            y_true.append(y_test.loc[index])
+            y_true.append(y_test[index])
             total += 1
                 
         accuracy = float(correct * 100) / float(total)
         accuracies.append(accuracy)
-        print("Accuracy for round " + str(i) + " is " + str(accuracy) + "%")
+        # print("Accuracy for round " + str(i) + " is " + str(accuracy) + "%")
     
-    print("Result for cross validation: Accuracy has a mean of {} and a std of {}".format(np.mean(accuracies), np.std(accuracies)))
+    print("Our Result for cross validation: Accuracy has a mean of {} and a std of {}".format(np.mean(accuracies), np.std(accuracies)))
 
-    for emotion_number in emotion_values:
-        print("Precision for emotion {} is {}".format(emotion_number, get_precision(y_true, y_pred, emotion_number)))
-        print("Recall for emotion {} is {}".format(emotion_number, get_recall(y_true, y_pred, emotion_number)))
-        print("f1 score for emotion {} is {}".format(emotion_number, get_f1_score(y_true, y_pred, emotion_number)))
+    # for emotion_number in emotion_values:
+    #     print("Precision for emotion {} is {}".format(emotion_number, get_precision(y_true, y_pred, emotion_number)))
+    #     print("Recall for emotion {} is {}".format(emotion_number, get_recall(y_true, y_pred, emotion_number)))
+    #     print("f1 score for emotion {} is {}".format(emotion_number, get_f1_score(y_true, y_pred, emotion_number)))
     
-    plt.figure()
-    cfm = confusion_matrix(y_true, y_pred) / k
-    plot_confusion_matrix(cfm, classes=["1", "2", "3", "4", "5", "6"])
-    plt.show()
+    # plt.figure()
+    # cfm = confusion_matrix(y_true, y_pred) / k
+    # plot_confusion_matrix(cfm, classes=["1", "2", "3", "4", "5", "6"])
+    # plt.show()
 
 
 
 
 
+X, y = get_clean_data()
+clf = DecisionTreeClassifier(random_state=0)
+scores = cross_val_score(clf, X, y, cv=10)
+print("Average accuracy for sklearn decision tree is {} and std is {}".format(np.mean(scores), np.std(scores)))
 
-cross_validation(5, get_clean_dataframe())
+rf = RandomForestClassifier(random_state=0)
+scores = cross_val_score(rf, X, y, cv=10)
+print("Average accuracy for sklearn random forest is {} and std is {}".format(np.mean(scores), np.std(scores)))
+
+cross_validation(10, X, y)
 
 # dataset = get_clean_dataframe()[:50]
 # target = get_target()
