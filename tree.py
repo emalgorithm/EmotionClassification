@@ -1,10 +1,13 @@
 from node import Node
 import sys
 import numpy as np
+import math
+import random
 
 class Tree(object):
-    def __init__(self):
+    def __init__(self, random_forest = False):
         self.root = None
+        self.random_forest = random_forest
 
     # It receives a binarized training dataset
     def fit(self, predictors, X, y):
@@ -55,8 +58,9 @@ class Tree(object):
         max_information_gain = 0
         best_predictor = -1
         remaining_predictors = predictors[:]
+        sample_of_predictors = random.sample(predictors, int(math.sqrt(len(predictors)))) if self.random_forest else predictors
         
-        for predictor in predictors:
+        for predictor in sample_of_predictors:
             # Split data based on predictor
             left_X, right_X, left_y, right_y = self.split_data_based_on_predictor(X, y, predictor)
             

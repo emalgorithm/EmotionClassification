@@ -11,7 +11,7 @@ class RandomForest(object):
     def fit(self, predictors, X, y):
         for i in range(self.num_of_trees):
             sample_X, sample_y = self.get_new_sample(X, y)
-            tree = Tree()
+            tree = Tree(random_forest = True)
             tree.fit(predictors, sample_X, sample_y)
             self.trees.append(tree)
 

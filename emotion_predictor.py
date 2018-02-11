@@ -15,7 +15,7 @@ class EmotionPredictor(object):
             binary_y = binarize_y(y, emotion_number) 
             
             # tree = Tree()
-            tree = RandomForest(num_of_trees=10)
+            tree = RandomForest(num_of_trees=100)
             tree.fit(self.predictors, X, binary_y)
             self.trees.append(tree)
 
