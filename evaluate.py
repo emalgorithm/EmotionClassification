@@ -19,7 +19,6 @@ def cross_validation(k, X, y):
     accuracies = []
     y_pred = []
     y_true = []
-    target = get_target()
     predictors = get_predictors()
     emotion_values = get_emotion_values()
 
@@ -27,7 +26,7 @@ def cross_validation(k, X, y):
         #TODO: Maybe generate our own splits to control that they are different (even if these should be as well)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
-        emotion_predictor = EmotionPredictor(target, predictors)
+        emotion_predictor = EmotionPredictor(predictors)
         emotion_predictor.fit(emotion_values, X_train, y_train)
         
         correct = 0
@@ -45,7 +44,7 @@ def cross_validation(k, X, y):
                 
         accuracy = float(correct * 100) / float(total)
         accuracies.append(accuracy)
-        # print("Accuracy for round " + str(i) + " is " + str(accuracy) + "%")
+        print("Accuracy for round " + str(i) + " is " + str(accuracy) + "%")
     
     print("Our Result for cross validation: Accuracy has a mean of {} and a std of {}".format(np.mean(accuracies), np.std(accuracies)))
 

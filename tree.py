@@ -3,12 +3,11 @@ import sys
 import numpy as np
 
 class Tree(object):
-    def __init__(self, target):
-        self.target = target
+    def __init__(self):
         self.root = None
 
     # It receives a binarized training dataset
-    def fit(self, predictors, emotion_number, X, y):
+    def fit(self, predictors, X, y):
         root = self.fit_helper(predictors, X, y)
         self.root = root
 
@@ -27,8 +26,8 @@ class Tree(object):
         # If the remaining_training_data all belong to same class, then stop
         if not remaining_predictors or self.all_equal(remaining_y):
             counts = np.bincount(remaining_y)
-            confidence = np.argmax(counts) / len(remaining_y)
-            return Node(c = np.max(counts), confidence = confidence)
+            confidence = np.max(counts) / len(remaining_y)
+            return Node(c = np.argmax(counts), confidence = confidence)
             
         # Out of all predictors remaining_X_j and values s, we need to find j and s such that entropy is minimized
         # In this case, since the predictors are binary, we don't need to find s since we only have one choice of branching
@@ -36,8 +35,8 @@ class Tree(object):
         
         if j == -1:
             counts = np.bincount(remaining_y)
-            confidence = np.argmax(counts) / len(remaining_y)
-            return Node(c = np.max(counts), confidence = confidence)
+            confidence = np.max(counts) / len(remaining_y)
+            return Node(c = np.argmax(counts), confidence = confidence)
         
         # Now all training examples with remaining_X_j = 0 will belong to the left subtree, and remaining_X_j = 1 to the right subtree
         left_X, right_X, left_y, right_y = self.split_data_based_on_predictor(remaining_X, remaining_y, j)

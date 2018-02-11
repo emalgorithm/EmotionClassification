@@ -7,6 +7,7 @@ class Node(object):
         # number, only for leaf node: index of predicted class for this path
         self.c = c
 
+        # Probability that the target is positive
         self.confidence = confidence
 
     def __repr__(self, level = 0):

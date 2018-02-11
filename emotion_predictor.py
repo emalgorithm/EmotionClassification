@@ -1,9 +1,9 @@
 from tree import Tree
+from random_forest import RandomForest
 from util import binarize_y
 
 class EmotionPredictor(object):
-    def __init__(self, target, predictors):
-        self.target = target
+    def __init__(self, predictors):
         self.predictors = predictors
         # List of trees containing one tree for each emotions
         self.trees = []
@@ -14,8 +14,9 @@ class EmotionPredictor(object):
             # Create binary data for given emotion_number
             binary_y = binarize_y(y, emotion_number) 
             
-            tree = Tree(self.target)
-            tree.fit(self.predictors, emotion_number, X, binary_y)
+            # tree = Tree()
+            tree = RandomForest(num_of_trees=10)
+            tree.fit(self.predictors, X, binary_y)
             self.trees.append(tree)
 
     # Predict emotion for a given data_point
