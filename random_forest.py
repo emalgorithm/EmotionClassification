@@ -14,6 +14,8 @@ class RandomForest(object):
             results = [pool.apply_async(self.generate_tree, args=(predictors, X, y,)) for i in range(self.num_of_trees)]
             self.trees = [p.get() for p in results]
 
+        # self.trees = [self.generate_tree(predictors, X, y) for i in range(self.num_of_trees)]
+
     def generate_tree(self, predictors, X, y):
         sample_X, sample_y = self.get_new_sample(X, y)
         tree = Tree(random_forest = True)
