@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import itertools
+from time import gmtime, strftime
 
 
 from emotion_predictor import EmotionPredictor
@@ -56,7 +57,7 @@ def cross_validation(k, X, y, random_forest = False, use_confidence = False):
             y_pred.append(prediction)
             y_true.append(y_test[index])
             total += 1
-                
+
         accuracy = float(correct * 100) / float(total)
         accuracies.append(accuracy)
         print("Accuracy for round {0} is {1:.2f}".format(i + 1, accuracy))
