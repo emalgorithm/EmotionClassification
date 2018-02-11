@@ -21,7 +21,7 @@ from evaluation import cross_validation, plot_confusion_matrix, get_precision, g
 X, y = get_clean_data()
 
 
-cross_validation(10, X, y, random_forest = True, use_confidence = True)
+cross_validation(10, X, y, random_forest = True, use_confidence = True, num_of_trees=200)
 
 # clf = DecisionTreeClassifier(random_state=0)
 # scores = cross_val_score(clf, X, y, cv=10)

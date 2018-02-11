@@ -16,7 +16,7 @@ def main():
     correct = sum([1 for i, prediction in enumerate(y_pred) if prediction == y_test[i]])
     accuracy = float(correct * 100) / len(y_test)
     
-    print("Accuracy is {0:.2f}".format(accuracy))
+    print("Accuracy is {0:.2f}%".format(accuracy))
 
 if __name__ == "__main__":
     # execute only if run as a script

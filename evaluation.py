@@ -27,7 +27,7 @@ def get_train_test_split(X_splits, y_splits, index):
 
     return np.array(X_train), X_test, np.array(y_train), y_test
 
-def cross_validation(k, X, y, random_forest = False, use_confidence = False):
+def cross_validation(k, X, y, random_forest = False, use_confidence = False, num_of_trees=1):
     accuracies = []
     y_pred = []
     y_true = []
@@ -40,11 +40,16 @@ def cross_validation(k, X, y, random_forest = False, use_confidence = False):
     for i in range(k):
         X_train, X_test, y_train, y_test = get_train_test_split(X_splits, y_splits, i)
 
-        emotion_predictor = EmotionPredictor(predictors, random_forest, use_confidence)
+        emotion_predictor = EmotionPredictor(predictors, random_forest, use_confidence, num_of_trees)
         emotion_predictor.fit(emotion_values, X_train, y_train)
         
         predictions = emotion_predictor.predict(X_test)
         y_pred = y_pred + predictions
+        # print(y_test)
+        # print(y_true)
+        for elem in y_test:
+        	y_true.append(elem)
+        # y_true = y_true + y_test
         correct = sum([1 for i, prediction in enumerate(predictions) if prediction == y_test[i]])
 
         accuracy = float(correct * 100) / len(y_test)
