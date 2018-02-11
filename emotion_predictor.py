@@ -4,12 +4,13 @@ from util import binarize_y
 from multiprocessing import Pool
 
 class EmotionPredictor(object):
-    def __init__(self, predictors, random_forest = False, use_confidence = False):
+    def __init__(self, predictors, random_forest = False, use_confidence = False, num_of_trees = 1):
         self.predictors = predictors
         # List of trees containing one tree for each emotions
         self.trees = []
         self.random_forest = random_forest
         self.use_confidence = use_confidence
+        self.num_of_trees = num_of_trees
 
     # Train one binary tree for each target value
     def fit(self, emotion_values, X, y):
@@ -20,7 +21,7 @@ class EmotionPredictor(object):
         tree = Tree()
 
         if self.random_forest:
-            tree = RandomForest(num_of_trees=50)
+            tree = RandomForest(num_of_trees=self.num_of_trees)
         
         tree.fit(self.predictors, X, binary_y)
 
