@@ -1,4 +1,4 @@
-from util import get_clean_dataframe, get_noisy_dataframe, get_target, get_predictors, get_emotion_values, plot_confusion_matrix, get_precision, get_recall, get_f1_score
+from util import get_clean_dataframe, get_noisy_dataframe, get_target, get_predictors, get_emotion_values
 import numpy as np
 import math
 import pandas as pd
@@ -6,6 +6,7 @@ from pandas import Series
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
+import itertools
 
 
 from emotion_predictor import EmotionPredictor
@@ -25,7 +26,7 @@ def get_train_test_split(X_splits, y_splits, index):
 
     return np.array(X_train), X_test, np.array(y_train), y_test
 
-def cross_validation(k, X, y):
+def cross_validation(k, X, y, random_forest = False, use_confidence = False):
     accuracies = []
     y_pred = []
     y_true = []
@@ -40,7 +41,7 @@ def cross_validation(k, X, y):
         # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
         X_train, X_test, y_train, y_test = get_train_test_split(X_splits, y_splits, i)
 
-        emotion_predictor = EmotionPredictor(predictors)
+        emotion_predictor = EmotionPredictor(predictors, random_forest, use_confidence)
         emotion_predictor.fit(emotion_values, X_train, y_train)
         
         correct = 0
@@ -58,19 +59,19 @@ def cross_validation(k, X, y):
                 
         accuracy = float(correct * 100) / float(total)
         accuracies.append(accuracy)
-        print("Accuracy for round " + str(i) + " is " + str(accuracy) + "%")
+        print("Accuracy for round {0} is {1:.2f}".format(i + 1, accuracy))
     
-    print("Our Result for cross validation: Accuracy has a mean of {} and a std of {}".format(np.mean(accuracies), np.std(accuracies)))
+    print("Cross Validation accuracy has a mean of {0:.2f} and a std of {1:.2f}".format(np.mean(accuracies), np.std(accuracies)))
 
-    # for emotion_number in emotion_values:
-    #     print("Precision for emotion {} is {}".format(emotion_number, get_precision(y_true, y_pred, emotion_number)))
-    #     print("Recall for emotion {} is {}".format(emotion_number, get_recall(y_true, y_pred, emotion_number)))
-    #     print("f1 score for emotion {} is {}".format(emotion_number, get_f1_score(y_true, y_pred, emotion_number)))
+    print("          prec, rec, f1")
+    for emotion_number in emotion_values:
+        print("Emotion {0}: {1:.2f}, {2:.2f}, {3:.2f}".format(emotion_number, 
+        	get_precision(y_true, y_pred, emotion_number), get_recall(y_true, y_pred, emotion_number), get_f1_score(y_true, y_pred, emotion_number)))
     
-    # plt.figure()
-    # cfm = confusion_matrix(y_true, y_pred) / k
-    # plot_confusion_matrix(cfm, classes=["1", "2", "3", "4", "5", "6"])
-    # plt.show()
+    plt.figure()
+    cfm = confusion_matrix(y_true, y_pred) / k
+    plot_confusion_matrix(cfm, classes=["1", "2", "3", "4", "5", "6"])
+    plt.show()
 
 def get_precision(y_true, y_predicted, emotion_number):
 	predicted_positive = sum([1 for prediction in y_predicted if prediction == emotion_number])
@@ -114,8 +115,6 @@ def plot_confusion_matrix(cm, classes,
         print("Normalized confusion matrix")
     else:
         print('Confusion matrix, without normalization')
-
-    print(cm)
 
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
