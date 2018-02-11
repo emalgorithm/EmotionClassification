@@ -26,8 +26,13 @@ class EmotionPredictor(object):
 
         return tree
 
+    def predict(self, X):
+        y = [self.predict_single(row) for row in X]
+
+        return y
+
     # Predict emotion for a given data_point
-    def predict(self, data_point):
+    def predict_single(self, data_point):
         if self.use_confidence:
             return self.predict_with_confidence(data_point)
         return self.predict_without_confidence(data_point)

@@ -38,27 +38,16 @@ def cross_validation(k, X, y, random_forest = False, use_confidence = False):
     y_splits = np.array_split(y, k)
 
     for i in range(k):
-        #TODO: Maybe generate our own splits to control that they are different (even if these should be as well)
-        # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
         X_train, X_test, y_train, y_test = get_train_test_split(X_splits, y_splits, i)
 
         emotion_predictor = EmotionPredictor(predictors, random_forest, use_confidence)
         emotion_predictor.fit(emotion_values, X_train, y_train)
         
-        correct = 0
-        total = 0
+        predictions = emotion_predictor.predict(X_test)
+        y_pred = y_pred + predictions
+        correct = sum([1 for i, prediction in enumerate(predictions) if prediction == y_test[i]])
 
-        predictions = []
-
-        for index, row in enumerate(X_test):
-            prediction = emotion_predictor.predict(row)
-            if prediction == y_test[index]:
-                correct += 1
-            y_pred.append(prediction)
-            y_true.append(y_test[index])
-            total += 1
-
-        accuracy = float(correct * 100) / float(total)
+        accuracy = float(correct * 100) / len(y_test)
         accuracies.append(accuracy)
         print("Accuracy for round {0} is {1:.2f}".format(i + 1, accuracy))
     
